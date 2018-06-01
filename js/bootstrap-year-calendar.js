@@ -1097,6 +1097,15 @@
 			monthsShort: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
 			weekShort: 'W',
 			weekStart:0
+		},
+		lt: {
+            days: ["Sekmadienis", "Pirmadienis", "Antradienis", "Trečiadienis", "Ketvirtadienis", "Penktadienis", "Šeštadienis"],
+            daysShort: ["Sek", "Pir", "Ant", "Tre", "Ket", "Pen", "Šeš"],
+            daysMin: ["Se", "Pr", "An", "Tr", "Kt", "Pn", "Še"],
+            months: ["Sausis", "Vasaris", "Kovas", "Balandis", "Gegužė", "Birželis", "Liepa", "Rugpjūtis", "Rugsėjis", "Spalis", "Lapkritis", "Gruodis"],
+            monthsShort: ["Sau", "Vas", "Kov", "Bal", "Geg", "Bir", "Lie", "Rgp", "Rug", "Spa", "Lap", "Gru"],
+            weekShort: 'Sav',
+            weekStart: 1
 		}
 	};
 	

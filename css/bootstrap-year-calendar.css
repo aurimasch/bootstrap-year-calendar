@@ -19,45 +19,45 @@
 
 /* Main */
 .calendar {
-  padding: 4px;
-  -webkit-border-radius: 4px;
-  -moz-border-radius: 4px;
-  border-radius: 4px;
-  direction: ltr;
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
+	padding: 4px;
+	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+	border-radius: 4px;
+	direction: ltr;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
 }
 
 .calendar:after {
 	/* Apply the right height on the calendar div, even if the months elements are floating  */
 	clear: both;
 	content: "";
-	display:block;
+
 }
 
 .calendar.calendar-rtl {
-  direction: rtl;
+	direction: rtl;
 }
 .calendar.calendar-rtl table tr td span {
-  float: right;
+	float: right;
 }
 
 .calendar table {
-  margin: auto;
+	margin: auto;
 }
 
 .calendar table td,
 .calendar table th {
-  text-align: center;
-  width: 20px;
-  height: 20px;
-  border: none;
-  padding: 4px 5px;
-  font-size:12px;
+	text-align: center;
+	width: 20px;
+	height: 20px;
+	border: none;
+	padding: 4px 5px;
+	font-size:12px;
 }
 
 /* Header */
@@ -79,15 +79,15 @@
 }
 
 .calendar .calendar-header table th:hover {
-  background: #eeeeee;
-  cursor: pointer;
+	background: #eeeeee;
+	cursor: pointer;
 }
 
 .calendar .calendar-header table th.disabled,
 .calendar .calendar-header table th.disabled:hover {
-  background: none;
-  cursor: default;
-  color:white;
+	background: none;
+	cursor: default;
+	color:white;
 }
 
 .calendar .calendar-header table th.prev,
@@ -116,13 +116,17 @@
 /* Months */
 .calendar .months-container {
 	width:100%;
-	display:none;
+	display:flex;
+	flex-wrap: wrap;
+	justify-content: center
 }
 
 .calendar .month-container {
 	text-align:center;
 	height:200px;
 	padding:0;
+	margin: 30px 10px;
+
 }
 
 .calendar table.month th.month-title
@@ -177,23 +181,23 @@
 
 .table-striped .calendar table.month tr td,
 .table-striped .calendar table.month tr th {
-  background-color: transparent;
+	background-color: transparent;
 }
 
 .calendar table.month td.day .day-content:hover {
-  background: rgba(0, 0, 0, 0.2);
-  cursor: pointer;
+	background: rgba(0, 0, 0, 0.2);
+	cursor: pointer;
 }
 .calendar table.month tr td.old,
 .calendar table.month tr td.new,
 .calendar table.month tr td.old:hover,
 .calendar table.month tr td.new:hover {
-  background: none;
-  cursor: default;
+	background: none;
+	cursor: default;
 }
 .calendar table.month tr td.disabled,
 .calendar table.month tr td.disabled:hover {
-  color: #dddddd;
+	color: #dddddd;
 }
 
 .calendar table.month td.day.disabled .day-content:hover {
@@ -202,20 +206,20 @@
 }
 
 .calendar table.month tr td.range .day-content {
-   background: rgba(0, 0, 0, 0.2);
-  -webkit-border-radius: 0;
-  -moz-border-radius: 0;
-  border-radius: 0;
+	background: rgba(0, 0, 0, 0.2);
+	-webkit-border-radius: 0;
+	-moz-border-radius: 0;
+	border-radius: 0;
 }
 
 .calendar table.month tr td.range.range-start .day-content  {
-  border-top-left-radius:4px;
-  border-bottom-left-radius:4px;
+	border-top-left-radius:4px;
+	border-bottom-left-radius:4px;
 }
 
 .calendar table.month tr td.range.range-end .day-content  {
-  border-top-right-radius:4px;
-  border-bottom-right-radius:4px;
+	border-top-right-radius:4px;
+	border-bottom-right-radius:4px;
 }
 
 .calendar-context-menu,
