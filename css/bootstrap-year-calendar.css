@@ -121,12 +121,17 @@
 	justify-content: center
 }
 
+@media only screen and (min-width: 768px) {
+	.calendar .month-container {
+		margin: 0px 10px;
+	}
+}
+
 .calendar .month-container {
 	text-align:center;
 	height:200px;
 	padding:0;
 	margin: 30px 10px;
-
 }
 
 .calendar table.month th.month-title
