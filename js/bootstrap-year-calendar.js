@@ -115,15 +115,15 @@
 			
 			headerTable.append(prevDiv);
 			
-			var prev2YearDiv = $(document.createElement('th'));
-			prev2YearDiv.addClass('year-title year-neighbor2 hidden-sm hidden-xs');
-			prev2YearDiv.text(this.options.startYear - 2);
-			
-			if(this.options.minDate != null && this.options.minDate > new Date(this.options.startYear - 2, 11, 31)) {
-				prev2YearDiv.addClass('disabled');
-			}
-			
-			headerTable.append(prev2YearDiv);
+			// var prev2YearDiv = $(document.createElement('th'));
+			// prev2YearDiv.addClass('year-title year-neighbor2 hidden-sm hidden-xs');
+			// prev2YearDiv.text(this.options.startYear - 2);
+			//
+			// if(this.options.minDate != null && this.options.minDate > new Date(this.options.startYear - 2, 11, 31)) {
+			// 	prev2YearDiv.addClass('disabled');
+			// }
+			//
+			// headerTable.append(prev2YearDiv);
 			
 			var prevYearDiv = $(document.createElement('th'));
 			prevYearDiv.addClass('year-title year-neighbor hidden-xs');
@@ -151,22 +151,22 @@
 			
 			headerTable.append(nextYearDiv);
 			
-			var next2YearDiv = $(document.createElement('th'));
-			next2YearDiv.addClass('year-title year-neighbor2 hidden-sm hidden-xs');
-			next2YearDiv.text(this.options.startYear + 2);
-			
-			if(this.options.maxDate != null && this.options.maxDate < new Date(this.options.startYear + 2, 0, 1)) {
-				next2YearDiv.addClass('disabled');
-			}
-			
-			headerTable.append(next2YearDiv);
-			
-			var nextDiv = $(document.createElement('th'));
-			nextDiv.addClass('next');
-			
-			if(this.options.maxDate != null && this.options.maxDate < new Date(this.options.startYear + 1, 0, 1)) {
-				nextDiv.addClass('disabled');
-			}
+			// var next2YearDiv = $(document.createElement('th'));
+			// next2YearDiv.addClass('year-title year-neighbor2 hidden-sm hidden-xs');
+			// next2YearDiv.text(this.options.startYear + 2);
+			//
+			// if(this.options.maxDate != null && this.options.maxDate < new Date(this.options.startYear + 2, 0, 1)) {
+			// 	next2YearDiv.addClass('disabled');
+			// }
+			//
+			// headerTable.append(next2YearDiv);
+			//
+			// var nextDiv = $(document.createElement('th'));
+			// nextDiv.addClass('next');
+			//
+			// if(this.options.maxDate != null && this.options.maxDate < new Date(this.options.startYear + 1, 0, 1)) {
+			// 	nextDiv.addClass('disabled');
+			// }
 			
 			var nextIcon = $(document.createElement('span'));
 			nextIcon.addClass('glyphicon glyphicon-chevron-right');
