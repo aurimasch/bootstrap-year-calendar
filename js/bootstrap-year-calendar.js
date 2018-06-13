@@ -161,12 +161,13 @@
 			//
 			// headerTable.append(next2YearDiv);
 			//
-			// var nextDiv = $(document.createElement('th'));
-			// nextDiv.addClass('next');
-			//
-			// if(this.options.maxDate != null && this.options.maxDate < new Date(this.options.startYear + 1, 0, 1)) {
-			// 	nextDiv.addClass('disabled');
-			// }
+
+			var nextDiv = $(document.createElement('th'));
+			nextDiv.addClass('next');
+
+			if(this.options.maxDate != null && this.options.maxDate < new Date(this.options.startYear + 1, 0, 1)) {
+				nextDiv.addClass('disabled');
+			}
 			
 			var nextIcon = $(document.createElement('span'));
 			nextIcon.addClass('glyphicon glyphicon-chevron-right');
