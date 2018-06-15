@@ -583,7 +583,9 @@
 						_this._triggerEvent('selectRange', { 
 							startDate: minDate, 
 							endDate: maxDate,
-							events: _this.getEventsOnRange(minDate, new Date(maxDate.getFullYear(), maxDate.getMonth(), maxDate.getDate() + 1))
+							events: _this.getEventsOnRange(minDate, new Date(maxDate.getFullYear(), maxDate.getMonth(), maxDate.getDate() + 1)),
+                            pageX: e.pageX,
+                            pageY: e.pageY
 						});
 					}
 				});
