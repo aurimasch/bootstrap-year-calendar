@@ -859,6 +859,8 @@
             var day = elt.children('.day-content').text();
 			console.log(day);
 
+            return new Date(2018, 3, 5);
+
         },
 		_triggerEvent: function(eventName, parameters) {
 			var event = $.Event(eventName);
