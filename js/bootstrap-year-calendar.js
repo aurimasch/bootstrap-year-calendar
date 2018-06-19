@@ -587,7 +587,7 @@
                     }
                 });
 
-                cells.bind('touchenter', function (e) {
+                cells.bind('touchmove', function (e) {
                     if (_this._mouseDown) {
                         var currentDate = _this._getDate($(this));
                         console.log('mousedown')
