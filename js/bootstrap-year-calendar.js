@@ -582,12 +582,13 @@
                 });
 
                 cells.bind('touchmove', function (e) {
+                	console.log(e);
                     if (_this._mouseDown) {
                         var currentDate = _this._getDate($(this));
                         console.log('mousedown');
 
                         console.log(!_this.options.allowOverlap);
-                        
+
                         if(!_this.options.allowOverlap)
                         {
                             console.log('vidujeallowoverlap')
