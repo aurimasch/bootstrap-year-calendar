@@ -848,12 +848,18 @@
 
 		},
 		_getDate: function(elt) {
+			console.log('getting date: ');
+			console.log(elt);
 			var day = elt.children('.day-content').text();
 			var month = elt.closest('.month-container').data('month-id');
 			var year = this.options.startYear;
 
 			return new Date(year, month, day);
 		},
+		getDateFromTargetTouches: function(elt) {
+            var day = elt.children('.day-content').text();
+
+        },
 		_triggerEvent: function(eventName, parameters) {
 			var event = $.Event(eventName);
 
