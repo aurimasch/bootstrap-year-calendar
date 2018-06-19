@@ -858,7 +858,6 @@
         _getDateFromTargetTouches: function(elt) {
             console.log(elt);
             console.log(elt.target);
-            console.log(elt.target.text);
 			console.log(elt.closest('.month-container').data('month-id'));
             console.log(elt.target.closest('.month-container').data('month-id'));
 
