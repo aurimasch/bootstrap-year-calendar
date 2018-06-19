@@ -584,7 +584,7 @@
                 cells.bind('touchmove', function (e) {
                 	console.log(e);
                     if (_this._mouseDown) {
-                        var currentDate = _this._getDate(e.targetTouches[0]);
+                        var currentDate = _this._getDate(e.targetTouches[0].target);
 
                         console.log(!_this.options.allowOverlap);
 
