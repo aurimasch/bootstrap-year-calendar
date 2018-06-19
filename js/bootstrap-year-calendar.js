@@ -584,7 +584,7 @@
                 cells.bind('touchmove', function (e) {
                 	console.log(e);
                     if (_this._mouseDown) {
-                        var currentDate = _this._getDateFromTargetTouches($(e.targetTouches[0].target.parentNode[0]));
+                        var currentDate = _this._getDateFromTargetTouches($(e.currentTarget));
                         // var currentDate = _this._getDate($(this));
 
 
