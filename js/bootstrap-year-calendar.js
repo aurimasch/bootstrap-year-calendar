@@ -590,10 +590,11 @@
                 cells.bind('touchenter', function (e) {
                     if (_this._mouseDown) {
                         var currentDate = _this._getDate($(this));
+                        console.log('mousedown')
 
                         if(!_this.options.allowOverlap)
                         {
-                            console.log('viduječ')
+                            console.log('vidujeallowoverlap')
 
                             var newDate =  new Date(_this._rangeStart.getTime());
 
@@ -653,6 +654,7 @@
 				});
 
                 $(window).bind('touchend', function (e) {
+                	console.log('ivyksta touchend')
                     if (_this._mouseDown) {
                         _this._mouseDown = false;
                         _this._refreshRange();
