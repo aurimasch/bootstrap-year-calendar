@@ -572,7 +572,69 @@
 					}
 				});
 
-				$(window).mouseup(function (e) {
+				//////
+
+                if(this.options.enableRangeSelection) {
+                    cells.bind('touchstart', function (e) {
+                        if(e.which == 1) {
+                            var currentDate = _this._getDate($(this));
+
+                            if(_this.options.allowOverlap || _this.getEvents(currentDate).length == 0)
+                            {
+                                _this._mouseDown = true;
+                                _this._rangeStart = _this._rangeEnd = currentDate;
+                                _this._refreshRange();
+                            }
+                        }
+                    });
+
+                    cells.bind('touchenter', function (e) {
+                        if (_this._mouseDown) {
+                            var currentDate = _this._getDate($(this));
+
+                            if(!_this.options.allowOverlap)
+                            {
+                                var newDate =  new Date(_this._rangeStart.getTime());
+
+                                if(newDate < currentDate) {
+                                    var nextDate = new Date(newDate.getFullYear(), newDate.getMonth(), newDate.getDate() + 1);
+                                    while(newDate < currentDate) {
+                                        if(_this.getEvents(nextDate).length > 0)
+                                        {
+                                            break;
+                                        }
+
+                                        newDate.setDate(newDate.getDate() + 1);
+                                        nextDate.setDate(nextDate.getDate() + 1);
+                                    }
+                                }
+                                else {
+                                    var nextDate = new Date(newDate.getFullYear(), newDate.getMonth(), newDate.getDate() - 1);
+                                    while(newDate > currentDate) {
+                                        if(_this.getEvents(nextDate).length > 0)
+                                        {
+                                            break;
+                                        }
+
+                                        newDate.setDate(newDate.getDate() - 1);
+                                        nextDate.setDate(nextDate.getDate() - 1);
+                                    }
+                                }
+
+                                currentDate = newDate;
+                            }
+
+                            var oldValue = _this._rangeEnd;
+                            _this._rangeEnd = currentDate;
+
+                            if (oldValue.getTime() != _this._rangeEnd.getTime()) {
+                                _this._refreshRange();
+                            }
+                        }
+                    });
+
+
+                    $(window).mouseup(function (e) {
 					if (_this._mouseDown) {
 						_this._mouseDown = false;
 						_this._refreshRange();
