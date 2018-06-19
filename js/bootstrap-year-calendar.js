@@ -569,7 +569,7 @@
                 cells.bind('touchstart', function (e) {
                 	console.log(e)
                     if(e.which == 0) {
-                		console.log('viduje')
+                		console.log($(this))
                         var currentDate = _this._getDate($(this));
 
                         if(_this.options.allowOverlap || _this.getEvents(currentDate).length == 0)
@@ -584,10 +584,10 @@
                 cells.bind('touchmove', function (e) {
                 	console.log(e);
                     if (_this._mouseDown) {
-                        var currentDate = _this._getDateFromTargetTouches(e.targetTouches[0].target.parentNode);
-                        var currentDate = _this._getDate(e.targetTouches[0].target.parentNode);
+                        var currentDate = _this._getDateFromTargetTouches($(e.targetTouches[0].target.parentNode));
+                        var currentDate = _this._getDate($(this));
 
-                        
+
                         console.log(!_this.options.allowOverlap);
 
                         if(!_this.options.allowOverlap)
