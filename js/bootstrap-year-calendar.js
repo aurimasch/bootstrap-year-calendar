@@ -573,6 +573,7 @@
 				});
 
                 cells.bind('touchstart', function (e) {
+                	console.log(e)
                     if(e.which == 1) {
                         var currentDate = _this._getDate($(this));
 
