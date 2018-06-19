@@ -575,6 +575,7 @@
                 cells.bind('touchstart', function (e) {
                 	console.log(e)
                     if(e.which == 0) {
+                		console.log('viduje')
                         var currentDate = _this._getDate($(this));
 
                         if(_this.options.allowOverlap || _this.getEvents(currentDate).length == 0)
@@ -592,6 +593,8 @@
 
                         if(!_this.options.allowOverlap)
                         {
+                            console.log('viduječ')
+
                             var newDate =  new Date(_this._rangeStart.getTime());
 
                             if(newDate < currentDate) {
