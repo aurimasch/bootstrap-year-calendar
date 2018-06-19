@@ -559,7 +559,7 @@
                     }
                 });
 
-                cells.bind('touchstart', function (e) {
+                cells.bind('touchstart',{passive: true}, function (e) {
                     if (e.which == 0) {
                         var currentDate = _this._getDate($(this));
 
@@ -571,7 +571,7 @@
                     }
                 });
 
-                cells.bind('touchmove', function (e) {
+                cells.bind('touchmove',{passive: true}, function (e) {
                     if (_this._mouseDown) {
                         var xPos = e.originalEvent.touches[0].pageX;
                         var yPos = e.originalEvent.touches[0].pageY;
@@ -635,7 +635,7 @@
                     }
                 });
 
-                $(window).bind('touchend', function (e) {
+                $(window).bind('touchend',{passive: true}, function (e) {
                     console.log('touchendas')
                     if (_this._mouseDown) {
                         console.log('mouse down true')
