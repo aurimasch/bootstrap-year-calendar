@@ -584,7 +584,7 @@
                 cells.bind('touchmove', function (e) {
                 	console.log(e);
                     if (_this._mouseDown) {
-                        var currentDate = _this._getDate(e.targetTouches[0]);
+                        var currentDate = _this._getDateFromTargetTouches(e.targetTouches[0]);
 
                         console.log(!_this.options.allowOverlap);
 
@@ -853,6 +853,12 @@
 
 			return new Date(year, month, day);
 		},
+        _getDateFromTargetTouches: function(elt) {
+            console.log(elt);
+            console.log(elt.target);
+            console.log(elt.target());
+
+        },
 		_triggerEvent: function(eventName, parameters) {
 			var event = $.Event(eventName);
 
