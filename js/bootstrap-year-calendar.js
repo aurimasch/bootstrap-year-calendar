@@ -115,16 +115,6 @@
 
 			headerTable.append(prevDiv);
 
-			// var prev2YearDiv = $(document.createElement('th'));
-			// prev2YearDiv.addClass('year-title year-neighbor2 hidden-sm hidden-xs');
-			// prev2YearDiv.text(this.options.startYear - 2);
-			//
-			// if(this.options.minDate != null && this.options.minDate > new Date(this.options.startYear - 2, 11, 31)) {
-			// 	prev2YearDiv.addClass('disabled');
-			// }
-			//
-			// headerTable.append(prev2YearDiv);
-
 			var prevYearDiv = $(document.createElement('th'));
 			prevYearDiv.addClass('year-title year-neighbor hidden-xs');
 			prevYearDiv.text(this.options.startYear - 1);
@@ -531,6 +521,8 @@
 					if (_this._mouseDown) {
 						var currentDate = _this._getDate($(this));
 
+						console.log(!_this.options.allowOverlap);
+
 						if(!_this.options.allowOverlap)
 						{
 							var newDate =  new Date(_this._rangeStart.getTime());
@@ -592,8 +584,10 @@
                 cells.bind('touchmove', function (e) {
                     if (_this._mouseDown) {
                         var currentDate = _this._getDate($(this));
-                        console.log('mousedown')
+                        console.log('mousedown');
 
+                        console.log(!_this.options.allowOverlap);
+                        
                         if(!_this.options.allowOverlap)
                         {
                             console.log('vidujeallowoverlap')
