@@ -559,13 +559,13 @@
 									nextDate.setDate(nextDate.getDate() - 1);
 								}
 							}
-
+							console.log('ivyksta pakeitimaim ' + newDate);
 							currentDate = newDate;
 						}
 
 						var oldValue = _this._rangeEnd;
 						_this._rangeEnd = currentDate;
-                        console.log('range end2yy = ' + _this._rangeEnd);
+                        console.log('range endyy = ' + _this._rangeEnd);
 
 
                         if (oldValue.getTime() != _this._rangeEnd.getTime()) {
@@ -623,7 +623,8 @@
                                     newDate.setDate(newDate.getDate() - 1);
                                     nextDate.setDate(nextDate.getDate() - 1);
                                 }
-                            }
+                            }							console.log('ivyksta pakeitimait ' + newDate);
+
 
                             currentDate = newDate;
                         }
