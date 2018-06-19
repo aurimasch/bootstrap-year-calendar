@@ -565,8 +565,10 @@
 
 						var oldValue = _this._rangeEnd;
 						_this._rangeEnd = currentDate;
+                        console.log('range end2yy = ' + _this._rangeEnd);
 
-						if (oldValue.getTime() != _this._rangeEnd.getTime()) {
+
+                        if (oldValue.getTime() != _this._rangeEnd.getTime()) {
 							_this._refreshRange();
 						}
 					}
