@@ -584,16 +584,12 @@
                 cells.bind('touchmove', function (e) {
                 	console.log(e);
                     if (_this._mouseDown) {
-                        var currentDate = _this._getDate(e.targetTouches.firstChild);
-                        console.log(e.targetTouches.firstChild);
-                        console.log(e.targetTouches[0]);
+                        var currentDate = _this._getDate(e.targetTouches[0]);
 
                         console.log(!_this.options.allowOverlap);
 
                         if(!_this.options.allowOverlap)
                         {
-                            console.log('vidujeallowoverlap')
-
                             var newDate =  new Date(_this._rangeStart.getTime());
 
                             if(newDate < currentDate) {
