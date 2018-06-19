@@ -574,7 +574,7 @@
 
                 cells.bind('touchstart', function (e) {
                 	console.log(e)
-                    if(e.which == 1) {
+                    if(e.which == 0) {
                         var currentDate = _this._getDate($(this));
 
                         if(_this.options.allowOverlap || _this.getEvents(currentDate).length == 0)
