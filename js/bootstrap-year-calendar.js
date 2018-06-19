@@ -584,8 +584,7 @@
                 cells.bind('touchmove', function (e) {
                 	console.log(e);
                     if (_this._mouseDown) {
-                        var currentDate = _this._getDateFromTargetTouches($(e.currentTarget));
-                        // var currentDate = _this._getDate($(this));
+                        var currentDate = _this._getDateFromTargetTouches($(e));
 
 
                         console.log(!_this.options.allowOverlap);
@@ -857,11 +856,8 @@
 		},
         _getDateFromTargetTouches: function(elt) {
             console.log(elt);
-            console.log(elt.target);
-			console.log(elt.closest('.month-container').data('month-id'));
-            console.log(elt.target.closest('.month-container').data('month-id'));
-
-            console.log(elt.target());
+            var day = elt.children('.day-content').text();
+			console.log(day);
 
         },
 		_triggerEvent: function(eventName, parameters) {
