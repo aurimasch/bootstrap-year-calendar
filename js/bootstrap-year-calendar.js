@@ -559,7 +559,7 @@
                     }
                 });
 
-                cells.bind('touchstart',{passive: true}, function (e) {
+                cells.bind('touchstart', {passive: true}, function (e) {
                     if (e.which == 0) {
                         var currentDate = _this._getDate($(this));
 
@@ -571,14 +571,18 @@
                     }
                 });
 
-                cells.bind('touchmove',{passive: true}, function (e) {
-                    if (_this._mouseDown) {
-                        var xPos = e.originalEvent.touches[0].pageX;
-                        var yPos = e.originalEvent.touches[0].pageY;
+                cells.bind('touchmove', {passive: true}, function (e) {
+                    var xPos = e.originalEvent.touches[0].pageX;
+                    var yPos = e.originalEvent.touches[0].pageY;
 
-                        var currentDate = _this._getDateFromTargetTouches($(document.elementFromPoint(xPos, yPos)));
+                    var element = $(document.elementFromPoint(xPos, yPos));
 
+                    var elementType = element[0].className;
 
+                    if (_this._mouseDown && elementType === 'day-content') {
+                        console.log('vyksta, nes ne month')
+
+                        var currentDate = _this._getDateFromTargetTouches(element)
                         if (!_this.options.allowOverlap) {
                             var newDate = new Date(_this._rangeStart.getTime());
 
@@ -635,7 +639,7 @@
                     }
                 });
 
-                $(window).bind('touchend',{passive: true}, function (e) {
+                $(window).bind('touchend', {passive: true}, function (e) {
                     console.log('touchendas')
                     if (_this._mouseDown) {
                         console.log('mouse down true')
@@ -840,7 +844,6 @@
             return new Date(year, month, day);
         },
         _getDateFromTargetTouches: function (elt) {
-            console.log(elt);
             var day = elt.text();
             var month = elt.closest('.month-container').data('month-id');
             var year = this.options.startYear;
@@ -849,7 +852,8 @@
             // console.log(elt.closest('.month-container').data('month-id'))
             // console.log('-----')
             // console.log('month');
-            // console.log(month);
+            // console.log(month);omTargetTouches(element);
+
             // console.log('data ----')
             // console.log(new Date(year, 0, day))
             // console.log('------')
