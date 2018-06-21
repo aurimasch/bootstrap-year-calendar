@@ -18,6 +18,22 @@
  * ========================================================= */
 
 (function ($) {
+
+    jQuery.event.special.touchstart = {
+        setup: function (_, ns, handle) {
+            if (ns.includes("noPreventDefault")) {
+                this.addEventListener("touchstart", handle, {passive: false});
+            } else {
+                this.addEventListener("touchstart", handle, {passive: true});
+            }
+            if (ns.includes("noPreventDefault")) {
+                this.addEventListener("touchmove", handle, {passive: false});
+            } else {
+                this.addEventListener("touchmove", handle, {passive: true});
+            }
+        }
+    };
+    
     var Calendar = function (element, options) {
         this.element = element;
         this.element.addClass('calendar');
@@ -26,6 +42,7 @@
         this._initializeOptions(options);
         this.setYear(this.options.startYear);
     };
+
 
     Calendar.prototype = {
         constructor: Calendar,
