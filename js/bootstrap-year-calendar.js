@@ -33,7 +33,7 @@
             }
         }
     };
-    
+
     var Calendar = function (element, options) {
         this.element = element;
         this.element.addClass('calendar');
@@ -72,7 +72,8 @@
                 contextMenuItems: opt.contextMenuItems instanceof Array ? opt.contextMenuItems : [],
                 customDayRenderer: $.isFunction(opt.customDayRenderer) ? opt.customDayRenderer : null,
                 customDataSourceRenderer: $.isFunction(opt.customDataSourceRenderer) ? opt.customDataSourceRenderer : null,
-                weekStart: !isNaN(parseInt(opt.weekStart)) ? parseInt(opt.weekStart) : null
+                weekStart: !isNaN(parseInt(opt.weekStart)) ? parseInt(opt.weekStart) : null,
+                showSelectedPeriod: opt.showSelectedPeriod != null ? opt.showSelectedPeriod : false,
             };
 
             this._initializeDatasourceColors();
@@ -641,7 +642,9 @@
                 $(window).mouseup(function (e) {
                     if (_this._mouseDown) {
                         _this._mouseDown = false;
-                        _this._refreshRange();
+                        if (!_this.options.showSelectedPeriod) {
+                            _this._refreshRange();
+                        }
 
                         var minDate = _this._rangeStart < _this._rangeEnd ? _this._rangeStart : _this._rangeEnd;
                         var maxDate = _this._rangeEnd > _this._rangeStart ? _this._rangeEnd : _this._rangeStart;
@@ -656,15 +659,16 @@
                     }
                 });
 
-                $(window).bind('touchend', {passive: true}, function (e) {
+                $('.months-container').bind('touchend', {passive: true}, function (e) {
                     console.log('touchendas')
                     if (_this._mouseDown) {
                         console.log('mouse down true')
                         console.log(e)
-
-
                         _this._mouseDown = false;
-                        _this._refreshRange();
+
+                        if (!_this.options.showSelectedPeriod) {
+                            _this._refreshRange();
+                        }
 
                         var minDate = _this._rangeStart < _this._rangeEnd ? _this._rangeStart : _this._rangeEnd;
                         var maxDate = _this._rangeEnd > _this._rangeStart ? _this._rangeEnd : _this._rangeStart;
@@ -726,6 +730,12 @@
 
                 $(_this.element).find('.month-container').attr('class', monthContainerClass);
             }, 300);
+
+            $(document).bind('rangeChanged', function (e) {
+                if (_this.options.showSelectedPeriod) {
+                    _this._setRange(e.detail.dateFrom, e.detail.dateTo);
+                }
+            });
         },
         _refreshRange: function () {
             var _this = this;
@@ -760,6 +770,43 @@
                     }
                 });
             }
+        },
+
+        _setRange: function (dateFrom, dateTo) {
+            var _this = this;
+
+            this.element.find('td.day.range').removeClass('range')
+            this.element.find('td.day.range-start').removeClass('range-start');
+            this.element.find('td.day.range-end').removeClass('range-end');
+
+            // if (this._mouseDown) {
+            var beforeRange = true;
+            var afterRange = false;
+            // var minDate = _this._rangeStart < _this._rangeEnd ? _this._rangeStart : _this._rangeEnd;
+            // var maxDate = _this._rangeEnd > _this._rangeStart ? _this._rangeEnd : _this._rangeStart;
+            var minDate = new Date(dateFrom);
+            var maxDate = new Date(dateTo);
+
+            this.element.find('.month-container').each(function () {
+                var monthId = $(this).data('month-id');
+                if (minDate.getMonth() <= monthId && maxDate.getMonth() >= monthId) {
+                    $(this).find('td.day:not(.old, .new)').each(function () {
+                        var date = _this._getDate($(this));
+                        if (date >= minDate && date <= maxDate) {
+                            $(this).addClass('range');
+
+                            if (date.getTime() == minDate.getTime()) {
+                                $(this).addClass('range-start');
+                            }
+
+                            if (date.getTime() == maxDate.getTime()) {
+                                $(this).addClass('range-end');
+                            }
+                        }
+                    });
+                }
+            });
+            // }
         },
         _openContextMenu: function (elt) {
             var contextMenu = $('.calendar-context-menu');
