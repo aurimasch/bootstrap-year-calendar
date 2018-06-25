@@ -133,19 +133,7 @@
 
             var headerTable = $(document.createElement('table'));
 
-            var prevDiv = $(document.createElement('th'));
-            prevDiv.addClass('prev');
 
-            if (this.options.minDate != null && this.options.minDate > new Date(this.options.startYear - 1, 11, 31)) {
-                prevDiv.addClass('disabled');
-            }
-
-            var prevIcon = $(document.createElement('span'));
-            prevIcon.addClass('glyphicon glyphicon-chevron-left');
-
-            prevDiv.append(prevIcon);
-
-            headerTable.append(prevDiv);
 
             var prevYearDiv = $(document.createElement('th'));
             prevYearDiv.addClass('year-title year-neighbor hidden-xs');
@@ -172,31 +160,6 @@
             }
 
             headerTable.append(nextYearDiv);
-
-            // var next2YearDiv = $(document.createElement('th'));
-            // next2YearDiv.addClass('year-title year-neighbor2 hidden-sm hidden-xs');
-            // next2YearDiv.text(this.options.startYear + 2);
-            //
-            // if(this.options.maxDate != null && this.options.maxDate < new Date(this.options.startYear + 2, 0, 1)) {
-            // 	next2YearDiv.addClass('disabled');
-            // }
-            //
-            // headerTable.append(next2YearDiv);
-            //
-
-            var nextDiv = $(document.createElement('th'));
-            nextDiv.addClass('next');
-
-            if (this.options.maxDate != null && this.options.maxDate < new Date(this.options.startYear + 1, 0, 1)) {
-                nextDiv.addClass('disabled');
-            }
-
-            var nextIcon = $(document.createElement('span'));
-            nextIcon.addClass('glyphicon glyphicon-chevron-right');
-
-            nextDiv.append(nextIcon);
-
-            headerTable.append(nextDiv);
 
             header.append(headerTable);
 
@@ -577,13 +540,7 @@
                     }
                 });
 
-                var start;
-                var isMobile = false;
-                cells.bind('touchstart', function (e) {
-                    isMobile = true;
-                    start = Date.now();
-                    console.log('starting from 0')
-
+                cells.bind('touchstart', {passive: true}, function (e) {
                     if (e.which == 0) {
                         var currentDate = _this._getDate($(this));
 
@@ -595,62 +552,58 @@
                     }
                 });
 
-                cells.bind('touchmove', function (e) {
-                    console.log('moving', Date.now() - start)
+                cells.bind('touchmove', {passive: true}, function (e) {
+                    var xPos = e.originalEvent.touches[0].pageX;
+                    var yPos = e.originalEvent.touches[0].pageY;
 
-                    if (Date.now() - start > 300 && start) {
-                        var xPos = e.originalEvent.touches[0].pageX;
-                        var yPos = e.originalEvent.touches[0].pageY;
+                    var element = $(document.elementFromPoint(xPos, yPos));
 
-                        var element = $(document.elementFromPoint(xPos, yPos));
+                    var elementType = element[0].className;
 
-                        var elementType = element[0].className;
+                    if (_this._mouseDown && elementType === 'day-content') {
+                        console.log('vyksta, nes ne month')
 
-                        if (_this._mouseDown && elementType === 'day-content') {
-                            console.log('vyksta, nes ne month')
+                        var currentDate = _this._getDateFromTargetTouches(element)
+                        if (!_this.options.allowOverlap) {
+                            var newDate = new Date(_this._rangeStart.getTime());
 
-                            var currentDate = _this._getDateFromTargetTouches(element)
-                            if (!_this.options.allowOverlap) {
-                                var newDate = new Date(_this._rangeStart.getTime());
-
-                                if (newDate < currentDate) {
-                                    var nextDate = new Date(newDate.getFullYear(), newDate.getMonth(), newDate.getDate() + 1);
-                                    while (newDate < currentDate) {
-                                        if (_this.getEvents(nextDate).length > 0) {
-                                            break;
-                                        }
-
-                                        newDate.setDate(newDate.getDate() + 1);
-                                        nextDate.setDate(nextDate.getDate() + 1);
+                            if (newDate < currentDate) {
+                                var nextDate = new Date(newDate.getFullYear(), newDate.getMonth(), newDate.getDate() + 1);
+                                while (newDate < currentDate) {
+                                    if (_this.getEvents(nextDate).length > 0) {
+                                        break;
                                     }
-                                }
-                                else {
-                                    var nextDate = new Date(newDate.getFullYear(), newDate.getMonth(), newDate.getDate() - 1);
-                                    while (newDate > currentDate) {
-                                        if (_this.getEvents(nextDate).length > 0) {
-                                            break;
-                                        }
 
-                                        newDate.setDate(newDate.getDate() - 1);
-                                        nextDate.setDate(nextDate.getDate() - 1);
+                                    newDate.setDate(newDate.getDate() + 1);
+                                    nextDate.setDate(nextDate.getDate() + 1);
+                                }
+                            }
+                            else {
+                                var nextDate = new Date(newDate.getFullYear(), newDate.getMonth(), newDate.getDate() - 1);
+                                while (newDate > currentDate) {
+                                    if (_this.getEvents(nextDate).length > 0) {
+                                        break;
                                     }
+
+                                    newDate.setDate(newDate.getDate() - 1);
+                                    nextDate.setDate(nextDate.getDate() - 1);
                                 }
-
-
-                                currentDate = newDate;
                             }
 
-                            var oldValue = _this._rangeEnd;
-                            _this._rangeEnd = currentDate;
-                            if (oldValue.getTime() != _this._rangeEnd.getTime()) {
-                                _this._refreshRange();
-                            }
+
+                            currentDate = newDate;
+                        }
+
+                        var oldValue = _this._rangeEnd;
+                        _this._rangeEnd = currentDate;
+                        if (oldValue.getTime() != _this._rangeEnd.getTime()) {
+                            _this._refreshRange();
                         }
                     }
                 });
 
                 $(window).mouseup(function (e) {
-                    if (_this._mouseDown && !isMobile) {
+                    if (_this._mouseDown) {
                         _this._mouseDown = false;
                         if (!_this.options.showSelectedPeriod) {
                             _this._refreshRange();
@@ -659,7 +612,6 @@
                         var minDate = _this._rangeStart < _this._rangeEnd ? _this._rangeStart : _this._rangeEnd;
                         var maxDate = _this._rangeEnd > _this._rangeStart ? _this._rangeEnd : _this._rangeStart;
 
-                        console.log('trigerinasi')
                         _this._triggerEvent('selectRange', {
                             startDate: minDate,
                             endDate: maxDate,
@@ -670,32 +622,28 @@
                     }
                 });
 
-                $('.months-container').bind('touchend', function (e) {
+                $('.months-container').bind('touchend', {passive: true}, function (e) {
+                    console.log('touchendas')
+                    if (_this._mouseDown) {
+                        console.log('mouse down true')
+                        console.log(e)
+                        _this._mouseDown = false;
 
-                    console.log('end', Date.now() - start)
-
-                    if (Date.now() - start > 300 && start) {
-                        if (_this._mouseDown) {
-                            _this._mouseDown = false;
-
-                            if (!_this.options.showSelectedPeriod) {
-                                _this._refreshRange();
-                            }
-
-                            var minDate = _this._rangeStart < _this._rangeEnd ? _this._rangeStart : _this._rangeEnd;
-                            var maxDate = _this._rangeEnd > _this._rangeStart ? _this._rangeEnd : _this._rangeStart;
-                            console.warn('emiting fucking event')
-                            _this._triggerEvent('selectRange', {
-                                startDate: minDate,
-                                endDate: maxDate,
-                                events: _this.getEventsOnRange(minDate, new Date(maxDate.getFullYear(), maxDate.getMonth(), maxDate.getDate() + 1)),
-                                pageX: e.changedTouches[0].pageX,
-                                pageY: e.changedTouches[0].pageY
-                            });
+                        if (!_this.options.showSelectedPeriod) {
+                            _this._refreshRange();
                         }
+
+                        var minDate = _this._rangeStart < _this._rangeEnd ? _this._rangeStart : _this._rangeEnd;
+                        var maxDate = _this._rangeEnd > _this._rangeStart ? _this._rangeEnd : _this._rangeStart;
+
+                        _this._triggerEvent('selectRange', {
+                            startDate: minDate,
+                            endDate: maxDate,
+                            events: _this.getEventsOnRange(minDate, new Date(maxDate.getFullYear(), maxDate.getMonth(), maxDate.getDate() + 1)),
+                            pageX: e.changedTouches[0].pageX,
+                            pageY: e.changedTouches[0].pageY
+                        });
                     }
-                    console.log('startas is naujo')
-                    start = undefined;
                 });
             }
 
@@ -746,11 +694,16 @@
                 $(_this.element).find('.month-container').attr('class', monthContainerClass);
             }, 300);
 
-            $(document).bind('rangeChanged', function (e) {
-                // console.log('rangeChange bleleee')
+            $(document).on('rangeChanged', function (e, args) {
+                console.log(args)
                 if (_this.options.showSelectedPeriod) {
-                    _this._setRange(e.detail.dateFrom, e.detail.dateTo);
+                    _this._setRange(args.dateFrom, args.dateTo);
                 }
+            });
+
+            $(document).on('deleteRange', function (e) {
+                _this._deleteRange();
+                console.log('range deleted')
             });
         },
         _refreshRange: function () {
@@ -788,6 +741,12 @@
             }
         },
 
+        _deleteRange: function() {
+            this.element.find('td.day.range').removeClass('range')
+            this.element.find('td.day.range-start').removeClass('range-start');
+            this.element.find('td.day.range-end').removeClass('range-end');
+        },
+
         _setRange: function (dateFrom, dateTo) {
             var _this = this;
 
@@ -795,13 +754,13 @@
             this.element.find('td.day.range-start').removeClass('range-start');
             this.element.find('td.day.range-end').removeClass('range-end');
 
-            // if (this._mouseDown) {
             var beforeRange = true;
             var afterRange = false;
-            // var minDate = _this._rangeStart < _this._rangeEnd ? _this._rangeStart : _this._rangeEnd;
-            // var maxDate = _this._rangeEnd > _this._rangeStart ? _this._rangeEnd : _this._rangeStart;
+
+            console.log(dateFrom, dateTo)
             var minDate = new Date(dateFrom);
             var maxDate = new Date(dateTo);
+            console.log(minDate, maxDate);
 
             this.element.find('.month-container').each(function () {
                 var monthId = $(this).data('month-id');
@@ -822,7 +781,6 @@
                     });
                 }
             });
-            // }
         },
         _openContextMenu: function (elt) {
             var contextMenu = $('.calendar-context-menu');
@@ -927,6 +885,7 @@
             var day = elt.text();
             var month = elt.closest('.month-container').data('month-id');
             var year = this.options.startYear;
+
 
             return new Date(year, month, day);
 
