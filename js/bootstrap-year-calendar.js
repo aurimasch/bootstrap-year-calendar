@@ -578,9 +578,9 @@
                 });
 
                 var start;
-                var isMobile = true;
+                var isMobile = false;
                 cells.bind('touchstart', function (e) {
-
+                    isMobile = true;
                     start = Date.now();
                     console.log('starting from 0')
 
