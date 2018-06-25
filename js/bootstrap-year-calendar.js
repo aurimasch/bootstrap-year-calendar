@@ -577,7 +577,13 @@
                     }
                 });
 
-                cells.bind('touchstart', {passive: true}, function (e) {
+                var start;
+                var isMobile = true;
+                cells.bind('touchstart', function (e) {
+
+                    start = Date.now();
+                    console.log('starting from 0')
+
                     if (e.which == 0) {
                         var currentDate = _this._getDate($(this));
 
@@ -589,58 +595,62 @@
                     }
                 });
 
-                cells.bind('touchmove', {passive: true}, function (e) {
-                    var xPos = e.originalEvent.touches[0].pageX;
-                    var yPos = e.originalEvent.touches[0].pageY;
+                cells.bind('touchmove', function (e) {
+                    console.log('moving', Date.now() - start)
 
-                    var element = $(document.elementFromPoint(xPos, yPos));
+                    if (Date.now() - start > 300 && start) {
+                        var xPos = e.originalEvent.touches[0].pageX;
+                        var yPos = e.originalEvent.touches[0].pageY;
 
-                    var elementType = element[0].className;
+                        var element = $(document.elementFromPoint(xPos, yPos));
 
-                    if (_this._mouseDown && elementType === 'day-content') {
-                        console.log('vyksta, nes ne month')
+                        var elementType = element[0].className;
 
-                        var currentDate = _this._getDateFromTargetTouches(element)
-                        if (!_this.options.allowOverlap) {
-                            var newDate = new Date(_this._rangeStart.getTime());
+                        if (_this._mouseDown && elementType === 'day-content') {
+                            console.log('vyksta, nes ne month')
 
-                            if (newDate < currentDate) {
-                                var nextDate = new Date(newDate.getFullYear(), newDate.getMonth(), newDate.getDate() + 1);
-                                while (newDate < currentDate) {
-                                    if (_this.getEvents(nextDate).length > 0) {
-                                        break;
+                            var currentDate = _this._getDateFromTargetTouches(element)
+                            if (!_this.options.allowOverlap) {
+                                var newDate = new Date(_this._rangeStart.getTime());
+
+                                if (newDate < currentDate) {
+                                    var nextDate = new Date(newDate.getFullYear(), newDate.getMonth(), newDate.getDate() + 1);
+                                    while (newDate < currentDate) {
+                                        if (_this.getEvents(nextDate).length > 0) {
+                                            break;
+                                        }
+
+                                        newDate.setDate(newDate.getDate() + 1);
+                                        nextDate.setDate(nextDate.getDate() + 1);
                                     }
-
-                                    newDate.setDate(newDate.getDate() + 1);
-                                    nextDate.setDate(nextDate.getDate() + 1);
                                 }
-                            }
-                            else {
-                                var nextDate = new Date(newDate.getFullYear(), newDate.getMonth(), newDate.getDate() - 1);
-                                while (newDate > currentDate) {
-                                    if (_this.getEvents(nextDate).length > 0) {
-                                        break;
+                                else {
+                                    var nextDate = new Date(newDate.getFullYear(), newDate.getMonth(), newDate.getDate() - 1);
+                                    while (newDate > currentDate) {
+                                        if (_this.getEvents(nextDate).length > 0) {
+                                            break;
+                                        }
+
+                                        newDate.setDate(newDate.getDate() - 1);
+                                        nextDate.setDate(nextDate.getDate() - 1);
                                     }
-
-                                    newDate.setDate(newDate.getDate() - 1);
-                                    nextDate.setDate(nextDate.getDate() - 1);
                                 }
+
+
+                                currentDate = newDate;
                             }
 
-
-                            currentDate = newDate;
-                        }
-
-                        var oldValue = _this._rangeEnd;
-                        _this._rangeEnd = currentDate;
-                        if (oldValue.getTime() != _this._rangeEnd.getTime()) {
-                            _this._refreshRange();
+                            var oldValue = _this._rangeEnd;
+                            _this._rangeEnd = currentDate;
+                            if (oldValue.getTime() != _this._rangeEnd.getTime()) {
+                                _this._refreshRange();
+                            }
                         }
                     }
                 });
 
                 $(window).mouseup(function (e) {
-                    if (_this._mouseDown) {
+                    if (_this._mouseDown && !isMobile) {
                         _this._mouseDown = false;
                         if (!_this.options.showSelectedPeriod) {
                             _this._refreshRange();
@@ -649,6 +659,7 @@
                         var minDate = _this._rangeStart < _this._rangeEnd ? _this._rangeStart : _this._rangeEnd;
                         var maxDate = _this._rangeEnd > _this._rangeStart ? _this._rangeEnd : _this._rangeStart;
 
+                        console.log('trigerinasi')
                         _this._triggerEvent('selectRange', {
                             startDate: minDate,
                             endDate: maxDate,
@@ -659,28 +670,32 @@
                     }
                 });
 
-                $('.months-container').bind('touchend', {passive: true}, function (e) {
-                    console.log('touchendas')
-                    if (_this._mouseDown) {
-                        console.log('mouse down true')
-                        console.log(e)
-                        _this._mouseDown = false;
+                $('.months-container').bind('touchend', function (e) {
 
-                        if (!_this.options.showSelectedPeriod) {
-                            _this._refreshRange();
+                    console.log('end', Date.now() - start)
+
+                    if (Date.now() - start > 300 && start) {
+                        if (_this._mouseDown) {
+                            _this._mouseDown = false;
+
+                            if (!_this.options.showSelectedPeriod) {
+                                _this._refreshRange();
+                            }
+
+                            var minDate = _this._rangeStart < _this._rangeEnd ? _this._rangeStart : _this._rangeEnd;
+                            var maxDate = _this._rangeEnd > _this._rangeStart ? _this._rangeEnd : _this._rangeStart;
+                            console.warn('emiting fucking event')
+                            _this._triggerEvent('selectRange', {
+                                startDate: minDate,
+                                endDate: maxDate,
+                                events: _this.getEventsOnRange(minDate, new Date(maxDate.getFullYear(), maxDate.getMonth(), maxDate.getDate() + 1)),
+                                pageX: e.changedTouches[0].pageX,
+                                pageY: e.changedTouches[0].pageY
+                            });
                         }
-
-                        var minDate = _this._rangeStart < _this._rangeEnd ? _this._rangeStart : _this._rangeEnd;
-                        var maxDate = _this._rangeEnd > _this._rangeStart ? _this._rangeEnd : _this._rangeStart;
-
-                        _this._triggerEvent('selectRange', {
-                            startDate: minDate,
-                            endDate: maxDate,
-                            events: _this.getEventsOnRange(minDate, new Date(maxDate.getFullYear(), maxDate.getMonth(), maxDate.getDate() + 1)),
-                            pageX: e.changedTouches[0].pageX,
-                            pageY: e.changedTouches[0].pageY
-                        });
                     }
+                    console.log('startas is naujo')
+                    start = undefined;
                 });
             }
 
@@ -732,6 +747,7 @@
             }, 300);
 
             $(document).bind('rangeChanged', function (e) {
+                // console.log('rangeChange bleleee')
                 if (_this.options.showSelectedPeriod) {
                     _this._setRange(e.detail.dateFrom, e.detail.dateTo);
                 }
@@ -912,15 +928,6 @@
             var month = elt.closest('.month-container').data('month-id');
             var year = this.options.startYear;
 
-            // console.log('trying to get month');
-            // console.log(elt.closest('.month-container').data('month-id'))
-            // console.log('-----')
-            // console.log('month');
-            // console.log(month);omTargetTouches(element);
-
-            // console.log('data ----')
-            // console.log(new Date(year, 0, day))
-            // console.log('------')
             return new Date(year, month, day);
 
         },
