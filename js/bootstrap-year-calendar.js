@@ -121,18 +121,22 @@
 
             this._renderBody();
             this._renderDataSource();
+            this._renderCustomDates();
 
             this._applyEvents();
             this.element.find('.months-container').fadeIn(500);
 
             this._triggerEvent('renderEnd', {currentYear: this.options.startYear});
         },
+        _renderCustomDates: function () {
+
+
+        },
         _renderHeader: function () {
             var header = $(document.createElement('div'));
             header.addClass('calendar-header panel panel-default');
 
             var headerTable = $(document.createElement('table'));
-
 
 
             var prevYearDiv = $(document.createElement('th'));
@@ -455,14 +459,17 @@
 
             /* Click on date */
             cells.click(function (e) {
-                e.stopPropagation();
-                var date = _this._getDate($(this));
-                _this._triggerEvent('clickDay', {
-                    element: $(this),
-                    which: e.which,
-                    date: date,
-                    events: _this.getEvents(date)
-                });
+                if (!isMobile) {
+                    console.warn('click on day')
+                    e.stopPropagation();
+                    var date = _this._getDate($(this));
+                    _this._triggerEvent('clickDay', {
+                        element: $(this),
+                        which: e.which,
+                        date: date,
+                        events: _this.getEvents(date)
+                    });
+                }
             });
 
             /* Click right on date */
@@ -540,7 +547,14 @@
                     }
                 });
 
-                cells.bind('touchstart', {passive: true}, function (e) {
+                var start;
+                var isMobile = false;
+
+                cells.bind('touchstart', function (e) {
+                    isMobile = true;
+                    start = Date.now();
+                    console.log('starting from 0')
+
                     if (e.which == 0) {
                         var currentDate = _this._getDate($(this));
 
@@ -552,58 +566,61 @@
                     }
                 });
 
-                cells.bind('touchmove', {passive: true}, function (e) {
-                    var xPos = e.originalEvent.touches[0].pageX;
-                    var yPos = e.originalEvent.touches[0].pageY;
+                cells.bind('touchmove', function (e) {
 
-                    var element = $(document.elementFromPoint(xPos, yPos));
+                    console.log('moving', Date.now() - start)
 
-                    var elementType = element[0].className;
+                    if (Date.now() - start > 300 && start) {
+                        var xPos = e.originalEvent.touches[0].pageX;
+                        var yPos = e.originalEvent.touches[0].pageY;
 
-                    if (_this._mouseDown && elementType === 'day-content') {
-                        console.log('vyksta, nes ne month')
+                        var element = $(document.elementFromPoint(xPos, yPos));
 
-                        var currentDate = _this._getDateFromTargetTouches(element)
-                        if (!_this.options.allowOverlap) {
-                            var newDate = new Date(_this._rangeStart.getTime());
+                        var elementType = element[0].className;
 
-                            if (newDate < currentDate) {
-                                var nextDate = new Date(newDate.getFullYear(), newDate.getMonth(), newDate.getDate() + 1);
-                                while (newDate < currentDate) {
-                                    if (_this.getEvents(nextDate).length > 0) {
-                                        break;
+                        if (_this._mouseDown && elementType === 'day-content') {
+                            console.log('vyksta, nes ne month')
+
+                            var currentDate = _this._getDateFromTargetTouches(element)
+                            if (!_this.options.allowOverlap) {
+                                var newDate = new Date(_this._rangeStart.getTime());
+
+                                if (newDate < currentDate) {
+                                    var nextDate = new Date(newDate.getFullYear(), newDate.getMonth(), newDate.getDate() + 1);
+                                    while (newDate < currentDate) {
+                                        if (_this.getEvents(nextDate).length > 0) {
+                                            break;
+                                        }
+
+                                        newDate.setDate(newDate.getDate() + 1);
+                                        nextDate.setDate(nextDate.getDate() + 1);
                                     }
-
-                                    newDate.setDate(newDate.getDate() + 1);
-                                    nextDate.setDate(nextDate.getDate() + 1);
                                 }
-                            }
-                            else {
-                                var nextDate = new Date(newDate.getFullYear(), newDate.getMonth(), newDate.getDate() - 1);
-                                while (newDate > currentDate) {
-                                    if (_this.getEvents(nextDate).length > 0) {
-                                        break;
+                                else {
+                                    var nextDate = new Date(newDate.getFullYear(), newDate.getMonth(), newDate.getDate() - 1);
+                                    while (newDate > currentDate) {
+                                        if (_this.getEvents(nextDate).length > 0) {
+                                            break;
+                                        }
+
+                                        newDate.setDate(newDate.getDate() - 1);
+                                        nextDate.setDate(nextDate.getDate() - 1);
                                     }
-
-                                    newDate.setDate(newDate.getDate() - 1);
-                                    nextDate.setDate(nextDate.getDate() - 1);
                                 }
+                                currentDate = newDate;
                             }
 
-
-                            currentDate = newDate;
-                        }
-
-                        var oldValue = _this._rangeEnd;
-                        _this._rangeEnd = currentDate;
-                        if (oldValue.getTime() != _this._rangeEnd.getTime()) {
-                            _this._refreshRange();
+                            var oldValue = _this._rangeEnd;
+                            _this._rangeEnd = currentDate;
+                            if (oldValue.getTime() != _this._rangeEnd.getTime()) {
+                                _this._refreshRange();
+                            }
                         }
                     }
                 });
 
                 $(window).mouseup(function (e) {
-                    if (_this._mouseDown) {
+                    if (_this._mouseDown && !isMobile) {
                         _this._mouseDown = false;
                         if (!_this.options.showSelectedPeriod) {
                             _this._refreshRange();
@@ -624,26 +641,34 @@
 
                 $('.months-container').bind('touchend', {passive: true}, function (e) {
                     console.log('touchendas')
-                    if (_this._mouseDown) {
-                        console.log('mouse down true')
-                        console.log(e)
-                        _this._mouseDown = false;
+                    if (Date.now() - start > 300 && start) {
+                        if (_this._mouseDown) {
+                            console.log('mouse down true')
+                            console.log(e)
+                            _this._mouseDown = false;
 
-                        if (!_this.options.showSelectedPeriod) {
-                            _this._refreshRange();
+                            if (!_this.options.showSelectedPeriod) {
+                                _this._refreshRange();
+                            }
+
+                            var minDate = _this._rangeStart < _this._rangeEnd ? _this._rangeStart : _this._rangeEnd;
+                            var maxDate = _this._rangeEnd > _this._rangeStart ? _this._rangeEnd : _this._rangeStart;
+
+                            _this._triggerEvent('selectRange', {
+                                startDate: minDate,
+                                endDate: maxDate,
+                                events: _this.getEventsOnRange(minDate, new Date(maxDate.getFullYear(), maxDate.getMonth(), maxDate.getDate() + 1)),
+                                pageX: e.changedTouches[0].pageX,
+                                pageY: e.changedTouches[0].pageY
+                            });
                         }
-
-                        var minDate = _this._rangeStart < _this._rangeEnd ? _this._rangeStart : _this._rangeEnd;
-                        var maxDate = _this._rangeEnd > _this._rangeStart ? _this._rangeEnd : _this._rangeStart;
-
-                        _this._triggerEvent('selectRange', {
-                            startDate: minDate,
-                            endDate: maxDate,
-                            events: _this.getEventsOnRange(minDate, new Date(maxDate.getFullYear(), maxDate.getMonth(), maxDate.getDate() + 1)),
-                            pageX: e.changedTouches[0].pageX,
-                            pageY: e.changedTouches[0].pageY
-                        });
+                    } else {
+                        _this._mouseDown = false;
+                        _this._refreshRange();
+                        console.log('startas is naujo')
+                        start = undefined;
                     }
+
                 });
             }
 
@@ -694,10 +719,9 @@
                 $(_this.element).find('.month-container').attr('class', monthContainerClass);
             }, 300);
 
-            $(document).on('rangeChanged', function (e, args) {
-                console.log(args)
+            $(document).on('rangeChanged', function (e) {
                 if (_this.options.showSelectedPeriod) {
-                    _this._setRange(args.dateFrom, args.dateTo);
+                    _this._setRange(e.detail.dateFrom, e.detail.dateTo);
                 }
             });
 
@@ -718,6 +742,7 @@
                 var afterRange = false;
                 var minDate = _this._rangeStart < _this._rangeEnd ? _this._rangeStart : _this._rangeEnd;
                 var maxDate = _this._rangeEnd > _this._rangeStart ? _this._rangeEnd : _this._rangeStart;
+                console.log('range', minDate, maxDate)
 
                 this.element.find('.month-container').each(function () {
                     var monthId = $(this).data('month-id');
@@ -741,7 +766,7 @@
             }
         },
 
-        _deleteRange: function() {
+        _deleteRange: function () {
             this.element.find('td.day.range').removeClass('range')
             this.element.find('td.day.range-start').removeClass('range-start');
             this.element.find('td.day.range-end').removeClass('range-end');
@@ -756,11 +781,10 @@
 
             var beforeRange = true;
             var afterRange = false;
-
-            console.log(dateFrom, dateTo)
             var minDate = new Date(dateFrom);
             var maxDate = new Date(dateTo);
-            console.log(minDate, maxDate);
+            minDate.setHours(0);
+            maxDate.setHours(0);
 
             this.element.find('.month-container').each(function () {
                 var monthId = $(this).data('month-id');
@@ -769,14 +793,6 @@
                         var date = _this._getDate($(this));
                         if (date >= minDate && date <= maxDate) {
                             $(this).addClass('range');
-
-                            if (date.getTime() == minDate.getTime()) {
-                                $(this).addClass('range-start');
-                            }
-
-                            if (date.getTime() == maxDate.getTime()) {
-                                $(this).addClass('range-end');
-                            }
                         }
                     });
                 }
