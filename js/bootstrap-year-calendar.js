@@ -549,8 +549,15 @@
 
                 var start;
                 var isMobile = false;
+                var savedDays = [];
 
                 cells.bind('touchstart', function (e) {
+                    console.log(_this._rangeStart, _this._rangeEnd)
+                    savedDays.push(_this._rangeStart);
+                    savedDays.push(_this._rangeEnd);
+
+                    console.log(savedDays)
+
                     isMobile = true;
                     start = Date.now();
                     console.log('starting from 0')
@@ -570,7 +577,7 @@
 
                     console.log('moving', Date.now() - start)
 
-                    if (Date.now() - start > 300 && start) {
+                    if (Date.now() - start > 700 && start) {
                         var xPos = e.originalEvent.touches[0].pageX;
                         var yPos = e.originalEvent.touches[0].pageY;
 
@@ -641,7 +648,7 @@
 
                 $('.months-container').bind('touchend', {passive: true}, function (e) {
                     console.log('touchendas')
-                    if (Date.now() - start > 300 && start) {
+                    if (Date.now() - start > 700 && start) {
                         if (_this._mouseDown) {
                             console.log('mouse down true')
                             console.log(e)
@@ -661,11 +668,14 @@
                                 pageX: e.changedTouches[0].pageX,
                                 pageY: e.changedTouches[0].pageY
                             });
+                            savedDays = [];
                         }
                     } else {
+                        _this._setRange(savedDays[0], savedDays[1]);
+
+                        savedDays = [];
                         _this._mouseDown = false;
-                        _this._refreshRange();
-                        console.log('startas is naujo')
+                        console.log('startas is naujo, uzsetina senas dienas, fake select')
                         start = undefined;
                     }
 
@@ -773,6 +783,11 @@
         },
 
         _setRange: function (dateFrom, dateTo) {
+            if (!(dateFrom && dateTo)) {
+                console.log('ner ka settint');
+                return;
+            }
+
             var _this = this;
 
             this.element.find('td.day.range').removeClass('range')
@@ -785,6 +800,8 @@
             var maxDate = new Date(dateTo);
             minDate.setHours(0);
             maxDate.setHours(0);
+            _this._rangeStart = minDate;
+            _this._rangeEnd = maxDate;
 
             this.element.find('.month-container').each(function () {
                 var monthId = $(this).data('month-id');
