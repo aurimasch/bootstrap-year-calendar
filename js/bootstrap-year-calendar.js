@@ -493,13 +493,15 @@
             /* Range selection */
             if (this.options.enableRangeSelection) {
                 cells.mousedown(function (e) {
-                    if (e.which == 1) {
-                        var currentDate = _this._getDate($(this));
+                    if(!isMobile) {
+                        if (e.which == 1) {
+                            var currentDate = _this._getDate($(this));
 
-                        if (_this.options.allowOverlap || _this.getEvents(currentDate).length == 0) {
-                            _this._mouseDown = true;
-                            _this._rangeStart = _this._rangeEnd = currentDate;
-                            _this._refreshRange();
+                            if (_this.options.allowOverlap || _this.getEvents(currentDate).length == 0) {
+                                _this._mouseDown = true;
+                                _this._rangeStart = _this._rangeEnd = currentDate;
+                                _this._refreshRange();
+                            }
                         }
                     }
                 });
@@ -577,7 +579,7 @@
 
                     console.log('moving', Date.now() - start)
 
-                    if (Date.now() - start > 700 && start) {
+                    if (Date.now() - start > 500 && start) {
                         var xPos = e.originalEvent.touches[0].pageX;
                         var yPos = e.originalEvent.touches[0].pageY;
 
@@ -648,7 +650,7 @@
 
                 $('.months-container').bind('touchend', {passive: true}, function (e) {
                     console.log('touchendas')
-                    if (Date.now() - start > 700 && start) {
+                    if (Date.now() - start > 500 && start) {
                         if (_this._mouseDown) {
                             console.log('mouse down true')
                             console.log(e)
