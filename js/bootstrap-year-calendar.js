@@ -682,11 +682,10 @@
                         } else {
                             console.log('fake select, nuima range')
                             _this._setRange(null, null);
+                            savedDays = [];
                         }
                         _this._mouseDown = false;
-                        savedDays = [];
                         start = undefined
-
                     }
                 });
             }
