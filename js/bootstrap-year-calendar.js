@@ -74,6 +74,7 @@
                 customDataSourceRenderer: $.isFunction(opt.customDataSourceRenderer) ? opt.customDataSourceRenderer : null,
                 weekStart: !isNaN(parseInt(opt.weekStart)) ? parseInt(opt.weekStart) : null,
                 showSelectedPeriod: opt.showSelectedPeriod != null ? opt.showSelectedPeriod : false,
+                remindLastPeriod: opt.remindLastPeriod != null ? opt.remindLastPeriod : false,
             };
 
             this._initializeDatasourceColors();
@@ -493,7 +494,7 @@
             /* Range selection */
             if (this.options.enableRangeSelection) {
                 cells.mousedown(function (e) {
-                    if(!isMobile) {
+                    if (!isMobile) {
                         if (e.which == 1) {
                             var currentDate = _this._getDate($(this));
 
@@ -554,11 +555,11 @@
                 var savedDays = [];
 
                 cells.bind('touchstart', function (e) {
-                    console.log(_this._rangeStart, _this._rangeEnd)
-                    savedDays.push(_this._rangeStart);
-                    savedDays.push(_this._rangeEnd);
 
-                    console.log(savedDays)
+                    if (_this.options.remindLastPeriod) {
+                        savedDays.push(_this._rangeStart);
+                        savedDays.push(_this._rangeEnd);
+                    }
 
                     isMobile = true;
                     start = Date.now();
@@ -570,6 +571,7 @@
                         if (_this.options.allowOverlap || _this.getEvents(currentDate).length == 0) {
                             _this._mouseDown = true;
                             _this._rangeStart = _this._rangeEnd = currentDate;
+                            console.log('touchstart refresh range', _this._rangeStart, _this._rangeEnd)
                             _this._refreshRange();
                         }
                     }
@@ -663,6 +665,7 @@
                             var minDate = _this._rangeStart < _this._rangeEnd ? _this._rangeStart : _this._rangeEnd;
                             var maxDate = _this._rangeEnd > _this._rangeStart ? _this._rangeEnd : _this._rangeStart;
 
+                            console.log(Date.now() - start)
                             _this._triggerEvent('selectRange', {
                                 startDate: minDate,
                                 endDate: maxDate,
@@ -673,14 +676,18 @@
                             savedDays = [];
                         }
                     } else {
-                        _this._setRange(savedDays[0], savedDays[1]);
-
-                        savedDays = [];
+                        if (_this.options.remindLastPeriod) {
+                            console.log('uzsetina senas dienas, fake select')
+                            _this._setRange(savedDays[0], savedDays[1]);
+                        } else {
+                            console.log('fake select, nuima range')
+                            _this._setRange(null, null);
+                        }
                         _this._mouseDown = false;
-                        console.log('startas is naujo, uzsetina senas dienas, fake select')
-                        start = undefined;
-                    }
+                        savedDays = [];
+                        start = undefined
 
+                    }
                 });
             }
 
@@ -785,6 +792,10 @@
         },
 
         _setRange: function (dateFrom, dateTo) {
+            this.element.find('td.day.range').removeClass('range')
+            this.element.find('td.day.range-start').removeClass('range-start');
+            this.element.find('td.day.range-end').removeClass('range-end');
+
             if (!(dateFrom && dateTo)) {
                 console.log('ner ka settint');
                 return;
@@ -792,9 +803,6 @@
 
             var _this = this;
 
-            this.element.find('td.day.range').removeClass('range')
-            this.element.find('td.day.range-start').removeClass('range-start');
-            this.element.find('td.day.range-end').removeClass('range-end');
 
             var beforeRange = true;
             var afterRange = false;
