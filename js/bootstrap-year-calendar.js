@@ -574,6 +574,9 @@
                 //detecting if it is mobile.
                 var isMobile = false;
 
+                //if it is first time that range is selected
+                var firstTime = true;
+
                 $('.months-container').bind('touchstart',  function (e) {
                     console.log("MOBILE!")
                     isMobile = true;
@@ -589,12 +592,20 @@
                 //for last saved range
                 var savedDays = [];
 
-                //if it is first time that range is selected
-                var firstTime = true;
+                var lastSelectedDate;
 
                 cells.bind('touchstart', function (e) {
                     console.log('timer is starting')
                     startTimer = Date.now();
+
+
+                    setTimeout(function() {
+                        console.log('mousedown - ', _this._mouseDown)
+                        if(_this._mouseDown) {
+                            _this._rangeEnd = lastSelectedDate;
+                            _this._refreshRange();
+                        }
+                    }, 500)
 
                     if (_this.options.remindLastPeriod) {
                         savedDays.push(_this._rangeStart);
@@ -613,12 +624,18 @@
                     }
                 });
 
+
                 cells.bind('touchmove', function (e) {
+                    var xPos = e.originalEvent.touches[0].pageX;
+                    var yPos = e.originalEvent.touches[0].pageY;
+                    var element = $(document.elementFromPoint(xPos, yPos));
+
+                    lastSelectedDate = _this._getDateFromTargetTouches(element);
+
                     console.log('Touch move sekundes:', Date.now() - startTimer)
 
                     if (Date.now() - startTimer > 500 && startTimer) {
-                        var xPos = e.originalEvent.touches[0].pageX;
-                        var yPos = e.originalEvent.touches[0].pageY;
+
 
                         var element = $(document.elementFromPoint(xPos, yPos));
 
