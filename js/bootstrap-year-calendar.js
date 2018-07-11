@@ -461,7 +461,6 @@
             /* Click on date */
             cells.click(function (e) {
                 if (!isMobile) {
-                    console.warn('click on day')
                     e.stopPropagation();
                     var date = _this._getDate($(this));
                     _this._triggerEvent('clickDay', {
@@ -570,19 +569,15 @@
 
                 //timer for touch length
                 var startTimer;
-
                 //detecting if it is mobile.
                 var isMobile = false;
-
                 //if it is first time that range is selected
                 var firstTime = true;
 
                 $('.months-container').bind('touchstart',  function (e) {
-                    console.log("MOBILE!")
                     isMobile = true;
 
                     if (firstTime && _this.options.remindLastPeriod) {
-                        console.error('pirmas kartas, prisiminti paskutini perioda')
                         savedDays.push(_this._rangeStart);
                         savedDays.push(_this._rangeEnd);
                         firstTime = false;
@@ -595,14 +590,17 @@
                 var lastSelectedDate;
 
                 cells.bind('touchstart', function (e) {
-                    console.log('timer is starting')
                     startTimer = Date.now();
+
+                    var xPos = e.originalEvent.touches[0].pageX;
+                    var yPos = e.originalEvent.touches[0].pageY;
+                    var element = $(document.elementFromPoint(xPos, yPos));
+                    _this._rangeStart = _this._getDateFromTargetTouches(element);
 
 
                     setTimeout(function() {
-                        console.log('mousedown - ', _this._mouseDown)
                         if(_this._mouseDown) {
-                            _this._rangeEnd = lastSelectedDate;
+                            _this._rangeEnd = lastSelectedDate ? lastSelectedDate : _this._rangeStart;
                             _this._refreshRange();
                         }
                     }, 500)
@@ -618,7 +616,6 @@
                         if (_this.options.allowOverlap || _this.getEvents(currentDate).length == 0) {
                             _this._mouseDown = true;
                             _this._rangeStart = _this._rangeEnd = currentDate;
-                            console.log('refreshinasi range!!! touchstart funkcija', _this._rangeStart, _this._rangeEnd)
                             _this._refreshRange();
                         }
                     }
@@ -631,8 +628,6 @@
                     var element = $(document.elementFromPoint(xPos, yPos));
 
                     lastSelectedDate = _this._getDateFromTargetTouches(element);
-
-                    console.log('Touch move sekundes:', Date.now() - startTimer)
 
                     if (Date.now() - startTimer > 500 && startTimer) {
 
@@ -674,6 +669,7 @@
                             var oldValue = _this._rangeEnd;
                             _this._rangeEnd = currentDate;
                             if (oldValue.getTime() != _this._rangeEnd.getTime()) {
+
                                 _this._refreshRange();
                             }
                         }
@@ -681,13 +677,13 @@
                 });
 
                 $('.months-container').bind('touchend', function (e) {
-                    console.log('touchendas')
+                    lastSelectedDate = undefined;
                     if (Date.now() - startTimer > 500 && startTimer) {
                         if (_this._mouseDown) {
-                            console.log(e)
                             _this._mouseDown = false;
 
                             if (!_this.options.showSelectedPeriod) {
+
                                 _this._refreshRange();
                             }
 
@@ -706,7 +702,6 @@
                         }
                     } else {
                         if (_this.options.remindLastPeriod) {
-                            console.log('uzsetina senas dienas, buvo scrollinimas!')
                             _this._setRange(savedDays[0], savedDays[1]);
                         } else {
                             _this._setRange(null, null);
@@ -773,11 +768,12 @@
 
             $(document).on('deleteRange', function (e) {
                 _this._deleteRange();
-                console.log('range deleted')
             });
         },
         _refreshRange: function () {
             var _this = this;
+
+
 
             this.element.find('td.day.range').removeClass('range')
             this.element.find('td.day.range-start').removeClass('range-start');
@@ -786,9 +782,10 @@
             if (this._mouseDown) {
                 var beforeRange = true;
                 var afterRange = false;
-                var minDate = _this._rangeStart < _this._rangeEnd ? _this._rangeStart : _this._rangeEnd;
+
+                var minDate = _this._rangeStart <= _this._rangeEnd ? _this._rangeStart : _this._rangeEnd;
                 var maxDate = _this._rangeEnd > _this._rangeStart ? _this._rangeEnd : _this._rangeStart;
-                console.log('range', minDate, maxDate)
+
 
                 this.element.find('.month-container').each(function () {
                     var monthId = $(this).data('month-id');
@@ -824,8 +821,7 @@
             this.element.find('td.day.range-end').removeClass('range-end');
 
             if (!(dateFrom && dateTo)) {
-                console.log('turetu tuimti visas datas')
-                console.log('ner ka settint');
+
                 return;
             }
 
